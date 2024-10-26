@@ -1,0 +1,14 @@
+postgres:
+  user: admin
+  password: admin123
+  connectionHost: postgres_archive
+  port: 5432
+  database_name: archive
+  sslmode: disable
+
+archive_manager: 
+  address: :8011
+  write_timeout: 5s
+  read_timeout: 5s
+  idle_timeout: 3s
+  shutdown_duration: 10s
