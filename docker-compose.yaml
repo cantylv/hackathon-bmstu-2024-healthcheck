@@ -13,22 +13,18 @@ services:
       - ./services/postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
-  mongo:
-    image: mongo:8.0.3
-    restart: always
-    container_name: mongo
-    volumes:
-      - ./services/mongo/initdb.d/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-    ports:
-      - ${MONGO_PORT}:${MONGO_PORT}
-    networks:
-      - ecosystem
+  # mongo:
+  #   image: mongo:8.0.3
+  #   restart: always
+  #   container_name: mongo
+  #   volumes:
+  #     - ./services/mongo/initdb.d/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+  #   ports:
+  #     - ${MONGO_PORT}:${MONGO_PORT}
   memcached:
     image: memcached:1.6.32
     restart: always
     container_name: memcached
     ports:
       - ${MEMCACHED_PORT}:${MEMCACHED_PORT}
-    networks:
-      - ecosystem
     command: memcached -m 64

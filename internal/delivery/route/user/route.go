@@ -15,7 +15,7 @@ func InitHandlers(r *mux.Router, postgresClient *pgx.Conn, logger *zap.Logger) {
 	ucUser := ucUser.NewUsecaseLayer(repoUser)
 	userHandlerManager := dUser.NewUserHandlerManager(ucUser, logger)
 	// ручки, отвечающие за получение и удаление пользователя
-	r.HandleFunc("/users", userHandlerManager.Read).Methods("GET")        // чтение данных пользователя
-	r.HandleFunc("/users", userHandlerManager.Delete).Methods("DELETE")   // удаление пользователя
+	r.HandleFunc("/users", userHandlerManager.Read).Methods("GET")                // чтение данных пользователя
+	r.HandleFunc("/users", userHandlerManager.Delete).Methods("DELETE")           // удаление пользователя
 	r.HandleFunc("/users/weight", userHandlerManager.UpdateWeight).Methods("PUT") // обновление массы тела
 }
