@@ -17,5 +17,6 @@ func getUserWithoutPassword(user *ent.User) *dto.UserWithoutPassword {
 		Sex:              user.Sex,
 		DayCalories:      user.DayCalories,
 		PhysicalActivity: user.PhysicalActivity,
+		BMI:              dto.BMIType{Value: user.BMI.Value, Comment: user.BMI.Comment},
 	}
 }

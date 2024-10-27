@@ -171,4 +171,10 @@ type UserWithoutPassword struct {
 	Sex              string  `json:"sex"`
 	DayCalories      float32 `json:"day_calories"`
 	PhysicalActivity string  `json:"physical_activity"`
+	BMI              BMIType `json:"bmi"`
+}
+
+type BMIType struct {
+	Value   float32 `json:"value"`
+	Comment string  `json:"comment"`
 }
