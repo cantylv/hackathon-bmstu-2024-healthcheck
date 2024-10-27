@@ -45,6 +45,7 @@ func (h *UserHandlerManager) Read(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	u, err := h.ucUser.Read(r.Context(), username)
+	u.BMI.Calculate(u.Weight, u.Height)
 	if err != nil {
 		if errors.Is(err, me.ErrUserNotExist) {
 			h.logger.Info(err.Error(), zap.String(mc.RequestID, requestID))
