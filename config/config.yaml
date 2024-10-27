@@ -12,3 +12,5 @@ server:
   read_timeout: 5s
   idle_timeout: 3s
   shutdown_duration: 10s
+
+secret_key: 550e8400-e29b-41d4-a716-446655440000

@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/entity"
+	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/entity/dto"
 	mc "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myconstants"
 	"github.com/spf13/viper"
 )
@@ -30,7 +30,7 @@ func GetJWtToken(r *http.Request) (string, error) {
 // Generates jwt-token.
 func NewJwtToken(props NewJwtTokenProps) (string, error) {
 	// Encode header.
-	h := entity.JwtTokenHeader{
+	h := dto.JwtTokenHeader{
 		Exp: time.Now().Format("02.01.2006 15:04:05 UTC-07"),
 	}
 	rawDataHeader, err := json.Marshal(h)
@@ -39,8 +39,8 @@ func NewJwtToken(props NewJwtTokenProps) (string, error) {
 	}
 	hEncoded := hex.EncodeToString(rawDataHeader)
 	// Encode payload.
-	p := entity.JwtTokenPayload{
-		Id: props.Username,
+	p := dto.JwtTokenPayload{
+		Username: props.Username,
 	}
 	rawDataPayload, err := json.Marshal(p)
 	if err != nil {

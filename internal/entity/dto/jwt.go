@@ -1,9 +1,9 @@
-package entity
+package dto
 
 type JwtTokenHeader struct {
 	Exp string `json:"exp"`
 }
 
 type JwtTokenPayload struct {
-	Id string `json:"id"`
+	Username string `json:"username"`
 }

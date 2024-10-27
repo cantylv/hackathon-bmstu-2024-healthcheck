@@ -1,6 +1,5 @@
 package dto
 
-// OUTPUT DATAFLOW
 type ResponseError struct {
 	Error string `json:"error"`
 }
