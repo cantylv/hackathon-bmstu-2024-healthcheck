@@ -148,6 +148,17 @@ func (h *AuthData) Validate() error {
 	return isPasswordValid(h.Password)
 }
 
+type Weight struct {
+	Value float32 `json:"weight"`
+}
+
+func (w *Weight) Validate() error {
+	if w.Value <= 0 {
+		return ErrInvalidWeight
+	}
+	return nil
+}
+
 // OUTPUT DATAFLOW
 type UserWithoutPassword struct {
 	ID               string  `json:"id"`

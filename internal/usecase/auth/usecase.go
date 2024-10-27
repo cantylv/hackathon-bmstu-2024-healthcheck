@@ -10,7 +10,6 @@ import (
 	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/entity/dto"
 	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/repo/user"
 	f "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/functions"
-	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myconstants"
 	me "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myerrors"
 )
 
@@ -48,30 +47,12 @@ func (u *UsecaseLayer) SignUp(ctx context.Context, authData *dto.CreateData) (*e
 	if err != nil {
 		return nil, err
 	}
-	dayCalories := getDayCalories(authData)
+	dayCalories := f.GetDayCalories(authData)
 	userNew, err := u.repoUser.Create(ctx, newUserFromSignUpForm(authData, hashedPassword, dayCalories))
 	if err != nil {
 		return nil, err
 	}
 	return userNew, nil
-}
-
-func getDayCalories(usr *dto.CreateData) float64 {
-	var bmr float64
-	// Приводим к float64 для всех вычислений
-	weight := float64(usr.Weight)
-	height := float64(usr.Height)
-	age := float64(usr.Age)
-
-	if usr.Sex == "F" {
-		bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161
-	} else {
-		bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5
-	}
-
-	// Умножаем BMR на коэффициент активности
-	caloriesNeeded := bmr * float64(myconstants.AllowedActivities[usr.PhysicalActivity])
-	return caloriesNeeded
 }
 
 // SignIn авторизует пользователя.

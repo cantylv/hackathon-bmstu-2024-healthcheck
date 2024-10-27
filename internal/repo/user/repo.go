@@ -14,6 +14,7 @@ type Repo interface {
 	GetByEmail(ctx context.Context, email string) (*ent.User, error)
 	DeleteByUsername(ctx context.Context, username string) error
 	Create(ctx context.Context, initData *ent.User) (*ent.User, error)
+	UpdateWeight(ctx context.Context, weight float32, dayCalories float64, username string) (*ent.User, error)
 }
 
 var _ Repo = (*RepoLayer)(nil)
@@ -50,13 +51,29 @@ var (
 			day_calories,
 			password   
 		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING %s`, user_fields)
+
+	sqlRowUpdateWeight = fmt.Sprintf(`
+		UPDATE "user"
+		SET weight = $1, day_calories = $2 
+		WHERE username = $3 RETURNING %s`, user_fields)
 )
 
 // GetByUsername позволяет получить пользователя с помощью никнейма.
 func (r *RepoLayer) GetByUsername(ctx context.Context, username string) (*ent.User, error) {
 	row := r.dbConn.QueryRow(ctx, sqlRowGetByUsername, username)
 	var u ent.User
-	err := row.Scan(&u.ID, &u.Username, &u.FirstName, &u.Weight, &u.Height, &u.Age, &u.Sex, &u.PhysicalActivity, &u.DayCalories, &u.Password)
+	err := row.Scan(
+		&u.ID,
+		&u.Username,
+		&u.FirstName,
+		&u.Weight,
+		&u.Height,
+		&u.Age,
+		&u.Sex,
+		&u.PhysicalActivity,
+		&u.DayCalories,
+		&u.Password,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +84,18 @@ func (r *RepoLayer) GetByUsername(ctx context.Context, username string) (*ent.Us
 func (r *RepoLayer) GetByEmail(ctx context.Context, email string) (*ent.User, error) {
 	row := r.dbConn.QueryRow(ctx, sqlRowGetByUsername, email)
 	var u ent.User
-	err := row.Scan(&u.ID, &u.Username, &u.FirstName, &u.Weight, &u.Height, &u.Age, &u.Sex, &u.PhysicalActivity, &u.DayCalories, &u.Password)
+	err := row.Scan(
+		&u.ID,
+		&u.Username,
+		&u.FirstName,
+		&u.Weight,
+		&u.Height,
+		&u.Age,
+		&u.Sex,
+		&u.PhysicalActivity,
+		&u.DayCalories,
+		&u.Password,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -96,11 +124,43 @@ func (r *RepoLayer) Create(ctx context.Context, initData *ent.User) (*ent.User, 
 		initData.Age,
 		initData.Sex,
 		initData.PhysicalActivity,
-		initData.DayCalories,
+		int(initData.DayCalories),
 		initData.Password,
 	)
 	var u ent.User
-	err := row.Scan(&u.ID, &u.Username, &u.FirstName, &u.Weight, &u.Height, &u.Age, &u.Sex, &u.PhysicalActivity, &u.DayCalories, &u.Password)
+	err := row.Scan(
+		&u.ID,
+		&u.Username,
+		&u.FirstName,
+		&u.Weight,
+		&u.Height,
+		&u.Age,
+		&u.Sex,
+		&u.PhysicalActivity,
+		&u.DayCalories,
+		&u.Password,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &u, nil
+}
+
+func (r *RepoLayer) UpdateWeight(ctx context.Context, weight float32, dayCalories float64, username string) (*ent.User, error) {
+	row := r.dbConn.QueryRow(ctx, sqlRowUpdateWeight, weight, int(dayCalories), username)
+	var u ent.User
+	err := row.Scan(
+		&u.ID,
+		&u.Username,
+		&u.FirstName,
+		&u.Weight,
+		&u.Height,
+		&u.Age,
+		&u.Sex,
+		&u.PhysicalActivity,
+		&u.DayCalories,
+		&u.Password,
+	)
 	if err != nil {
 		return nil, err
 	}

@@ -1,7 +1,9 @@
 package user
 
 import (
+	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 
 	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/entity/dto"
@@ -83,4 +85,52 @@ func (h *UserHandlerManager) Delete(w http.ResponseWriter, r *http.Request) {
 
 	f.FlashCookie(w, r)
 	f.Response(w, dto.ResponseDetail{Detail: "Вы успешно удалили себя из приложения 'Healthcheck'"}, http.StatusOK)
+}
+
+// UpdateWeight изменяет вес пользовател, считает новое значение дневного рациона.
+func (h *UserHandlerManager) UpdateWeight(w http.ResponseWriter, r *http.Request) {
+	requestID, err := f.GetCtxRequestID(r)
+	if err != nil {
+		h.logger.Error(err.Error(), zap.String(mc.RequestID, requestID))
+	}
+	username := f.GetUsernameCtx(r)
+	if username == "" {
+		h.logger.Info(me.ErrNotAuthenticated.Error(), zap.String(mc.RequestID, requestID))
+		f.Response(w, dto.ResponseError{Error: me.ErrNotAuthenticated.Error()}, http.StatusUnauthorized)
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		h.logger.Info(err.Error(), zap.String(mc.RequestID, requestID))
+		f.Response(w, dto.ResponseError{Error: me.ErrInvalidData.Error()}, http.StatusBadRequest)
+		return
+	}
+
+	var weight dto.Weight
+	err = json.Unmarshal(body, &weight)
+	if err != nil {
+		h.logger.Info(err.Error(), zap.String(mc.RequestID, requestID))
+		f.Response(w, dto.ResponseError{Error: me.ErrInvalidData.Error()}, http.StatusBadRequest)
+		return
+	}
+	err = weight.Validate()
+	if err != nil {
+		h.logger.Info(err.Error(), zap.String(mc.RequestID, requestID))
+		f.Response(w, dto.ResponseError{Error: err.Error()}, http.StatusBadRequest)
+		return
+	}
+
+	u, err := h.ucUser.UpdateWeight(r.Context(), weight.Value, username)
+	if err != nil {
+		if errors.Is(err, me.ErrUserNotExist) {
+			h.logger.Info(err.Error(), zap.String(mc.RequestID, requestID))
+			f.Response(w, dto.ResponseError{Error: err.Error()}, http.StatusBadRequest)
+			return
+		}
+		h.logger.Error(err.Error(), zap.String(mc.RequestID, requestID))
+		f.Response(w, dto.ResponseError{Error: me.ErrInternal.Error()}, http.StatusInternalServerError)
+		return
+	}
+	f.Response(w, getUserWithoutPassword(u), http.StatusOK)
 }

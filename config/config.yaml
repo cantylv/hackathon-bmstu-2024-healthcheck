@@ -13,4 +13,14 @@ server:
   idle_timeout: 3s
   shutdown_duration: 10s
 
+mongo:
+  host: mongo
+  port: 27017
+  conn_name: server
+  conn_pwd: server123
+
+memcached:
+  host: memcached
+  port: 11211
+
 secret_key: 550e8400-e29b-41d4-a716-446655440000
