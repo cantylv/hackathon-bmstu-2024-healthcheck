@@ -9,7 +9,6 @@ import (
 	f "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/functions"
 	mc "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myconstants"
 	me "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myerrors"
-	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 )
 
@@ -32,7 +31,12 @@ func (h *UserHandlerManager) Read(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.logger.Error(err.Error(), zap.String(mc.RequestID, requestID))
 	}
-	username := mux.Vars(r)["username"]
+	username := f.GetUsernameCtx(r)
+	if username == "" {
+		h.logger.Info(me.ErrNotAuthenticated.Error(), zap.String(mc.RequestID, requestID))
+		f.Response(w, dto.ResponseError{Error: me.ErrNotAuthenticated.Error()}, http.StatusUnauthorized)
+		return
+	}
 	if err := dto.ValidateUsername(username); err != nil {
 		h.logger.Info(err.Error(), zap.String(mc.RequestID, requestID))
 		f.Response(w, dto.ResponseError{Error: err.Error()}, http.StatusBadRequest)
@@ -54,45 +58,29 @@ func (h *UserHandlerManager) Read(w http.ResponseWriter, r *http.Request) {
 
 // Delete метод удаление пользователя, в случае успеха возвращает сообщение о том, что пользователь был удален.
 func (h *UserHandlerManager) Delete(w http.ResponseWriter, r *http.Request) {
-	// requestID, err := f.GetCtxRequestID(r)
-	//
-	//	if err != nil {
-	//		h.logger.Error(err.Error(), zap.String(mc.RequestID, requestID))
-	//	}
-	//
-	// userEmail := mux.Vars(r)["email"]
-	//
-	//	if !govalidator.IsEmail(userEmail) {
-	//		h.logger.Info(me.ErrInvalidEmail.Error(), zap.String(mc.RequestID, requestID))
-	//		f.Response(w, dto.ResponseError{Error: me.ErrInvalidEmail.Error()}, http.StatusBadRequest)
-	//		return
-	//	}
-	//
-	// userEmailDelete := mux.Vars(r)["email_delete"]
-	//
-	//	if !govalidator.IsEmail(userEmailDelete) {
-	//		h.logger.Info(me.ErrInvalidEmail.Error(), zap.String(mc.RequestID, requestID))
-	//		f.Response(w, dto.ResponseError{Error: me.ErrInvalidEmail.Error()}, http.StatusBadRequest)
-	//		return
-	//	}
-	//
-	// err = h.ucUser.Delete(r.Context(), userEmail, userEmailDelete)
-	//
-	//	if err != nil {
-	//		if errors.Is(err, me.ErrUserNotExist) || errors.Is(err, me.ErrUserIsResponsible) {
-	//			h.logger.Info(err.Error(), zap.String(mc.RequestID, requestID))
-	//			f.Response(w, dto.ResponseError{Error: err.Error()}, http.StatusBadRequest)
-	//			return
-	//		}
-	//		if errors.Is(err, me.ErrOnlyRootCanDeleteUser) || errors.Is(err, me.ErrCantDeleteRoot) {
-	//			h.logger.Info(err.Error(), zap.String(mc.RequestID, requestID))
-	//			f.Response(w, dto.ResponseError{Error: err.Error()}, http.StatusForbidden)
-	//			return
-	//		}
-	//		h.logger.Error(err.Error(), zap.String(mc.RequestID, requestID))
-	//		f.Response(w, dto.ResponseError{Error: me.ErrInternal.Error()}, http.StatusInternalServerError)
-	//		return
-	//	}
-	//
-	// f.Response(w, dto.ResponseDetail{Detail: "user was succesful deleted"}, http.StatusOK)
+	requestID, err := f.GetCtxRequestID(r)
+	if err != nil {
+		h.logger.Error(err.Error(), zap.String(mc.RequestID, requestID))
+	}
+	username := f.GetUsernameCtx(r)
+	if username == "" {
+		h.logger.Info(me.ErrNotAuthenticated.Error(), zap.String(mc.RequestID, requestID))
+		f.Response(w, dto.ResponseError{Error: me.ErrNotAuthenticated.Error()}, http.StatusUnauthorized)
+		return
+	}
+	err = h.ucUser.Delete(r.Context(), username)
+
+	if err != nil {
+		if errors.Is(err, me.ErrUserNotExist) {
+			h.logger.Info(err.Error(), zap.String(mc.RequestID, requestID))
+			f.Response(w, dto.ResponseError{Error: err.Error()}, http.StatusBadRequest)
+			return
+		}
+		h.logger.Error(err.Error(), zap.String(mc.RequestID, requestID))
+		f.Response(w, dto.ResponseError{Error: me.ErrInternal.Error()}, http.StatusInternalServerError)
+		return
+	}
+
+	f.FlashCookie(w, r)
+	f.Response(w, dto.ResponseDetail{Detail: "Вы успешно удалили себя из приложения 'Healthcheck'"}, http.StatusOK)
 }

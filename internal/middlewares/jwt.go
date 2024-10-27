@@ -16,7 +16,6 @@ import (
 	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/entity/dto"
 	f "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/functions"
 	mc "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myconstants"
-	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myerrors"
 	me "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myerrors"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -54,6 +53,7 @@ func JwtVerification(h http.Handler, logger *zap.Logger) http.Handler {
 		if jwtToken != "" {
 			username, err := jwtTokenIsValid(jwtToken)
 			if err != nil {
+				f.FlashCookie(w, r)
 				logger.Error(fmt.Sprintf("error while jwt verification: %v", err), zap.String(mc.RequestID, requestID))
 				f.Response(w, dto.ResponseError{Error: me.ErrInvalidJwt.Error()}, http.StatusUnauthorized)
 				return
@@ -73,7 +73,7 @@ func jwtTokenIsValid(token string) (string, error) {
 	// if all is okey, return true
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
-		return "", myerrors.ErrInvalidJwt
+		return "", me.ErrInvalidJwt
 	}
 	signatureHash, err := hashWithStatement(parts[0] + "." + parts[1]) // header + "." + payload)
 	if err != nil {
@@ -81,7 +81,7 @@ func jwtTokenIsValid(token string) (string, error) {
 	}
 	signature := hex.EncodeToString([]byte(signatureHash))
 	if signature != parts[2] {
-		return "", myerrors.ErrInvalidJwt
+		return "", me.ErrInvalidJwt
 	}
 
 	dataHeader, err := hex.DecodeString(parts[0])
@@ -111,7 +111,7 @@ func jwtTokenIsValid(token string) (string, error) {
 	}
 	dateNow := time.Now()
 	if jwtDate.Equal(dateNow) || dateNow.After(jwtDate) {
-		return "", myerrors.ErrInvalidJwt
+		return "", me.ErrInvalidJwt
 	}
 	return p.Username, nil
 }
