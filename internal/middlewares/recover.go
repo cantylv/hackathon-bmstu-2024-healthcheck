@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/cantylv/authorization-service/internal/entity/dto"
-	f "github.com/cantylv/authorization-service/internal/utils/functions"
-	e "github.com/cantylv/authorization-service/internal/utils/myerrors"
+	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/entity/dto"
+	f "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/functions"
+	e "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myerrors"
 	"go.uber.org/zap"
 )
 

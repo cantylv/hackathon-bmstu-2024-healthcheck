@@ -39,31 +39,8 @@ func readEnvAndSetDefault(logger *zap.Logger) {
 		viper.SetDefault("postgres.connectionHost", "postgres_privelege")
 	}
 
-	if rootEmail := os.Getenv("ROOT_EMAIL"); rootEmail != "" {
-		viper.SetDefault("root_email", rootEmail)
-	} else {
-		viper.SetDefault("root_email", rootEmailDefault)
-	}
-
-	if rootPassword := os.Getenv("ROOT_PASSWORD"); rootPassword != "" {
-		viper.SetDefault("root_password", rootPassword)
-	} else {
-		viper.SetDefault("root_password", rootPasswordDefault)
-	}
-
-	if rootFirstName := os.Getenv("ROOT_FIRST_NAME"); rootFirstName != "" {
-		viper.SetDefault("root_first_name", rootFirstName)
-	} else {
-		viper.SetDefault("root_first_name", rootFirstNameDefault)
-	}
-
-	if rootLastName := os.Getenv("ROOT_LAST_NAME"); rootLastName != "" {
-		viper.SetDefault("root_last_name", rootLastName)
-	} else {
-		viper.SetDefault("root_last_name", rootLastNameDefault)
-	}
-
 	viper.SetDefault("postgres.sslmode", "disable")
+
 	// SERVER
 	if address := os.Getenv("PS_SERVER_ADDRESS"); address != "" {
 		viper.SetDefault("server.address", address)

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	mc "github.com/cantylv/authorization-service/internal/utils/myconstants"
+	mc "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myconstants"
 	"golang.org/x/crypto/argon2"
 )
 

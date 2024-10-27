@@ -27,13 +27,10 @@ var (
 	ErrUserIsResponsible               = errors.New("user is responsible for group/groups, so root user need to appoint new owner")
 	ErrDeleteRootFromGroup             = errors.New("user doesn't have enough rights to delete root user from group")
 	// DATABASE
-	ErrNoRowsAffected         = errors.New("no rows were affected")
-	ErrUserNotExist           = errors.New("user is not exist")
 	ErrGroupNotExist          = errors.New("group is not exist")
 	ErrAgentNotExist          = errors.New("agent is not exist")
 	ErrBidNotExist            = errors.New("user doesn't have bid with this name")
 	ErrOwnerCantExitFromGroup = errors.New("to leave a group you need to remove the rights of the group owner")
-	ErrUserAlreadyExist       = errors.New("user with this email already exist")
 	ErrGroupAlreadyExist      = errors.New("group with this name already exist")
 	ErrBidAlreadyExist        = errors.New("bid with this name already exist")
 	ErrAgentAlreadyExist      = errors.New("agent with this name already exist")
@@ -41,12 +38,16 @@ var (
 	ErrUserAgentAlreadyExist  = errors.New("agent with this name already belongs to the selected user")
 	ErrGroupAgentNotExist     = errors.New("agent with this name not belongs to the selected group")
 	ErrUserAgentNotExist      = errors.New("agent with this name not belongs to the selected user")
-	// DTO
-	ErrInvalidEmail     = errors.New("incorrect email was sent, correct format is username@domain.extension, e.g.: gref@sber.ru")
-	ErrInvalidStatus    = errors.New("status must be in range(approved, rejected)")
-	ErrInvalidFirstName = errors.New("incorrect first name was sent, it must start with a capital letter and be between 2 and 50 characters long")
-	ErrInvalidLastName  = errors.New("incorrect last name was sent, it must start with a capital letter and be between 2 and 50 characters long")
-	ErrPasswordTooLong  = errors.New("password is too long, it must be between 8 and 30 characters long")
-	ErrPasswordTooShort = errors.New("password is too short, it must be between 8 and 30 characters long")
-	ErrPasswordFormat   = errors.New("password must contain at least one digit and one capital letter")
+
+	ErrInvalidJwt = errors.New("invalid jwt-token")
+
+	ErrIncorrectPwdOrLogin = errors.New("Неверный пароль или логин")
+	ErrUserAlreadyExist    = errors.New("Пользователь с таким никнеймом уже существует")
+	ErrUserNotExist        = errors.New("Пользователь с таким никнеймом не существует")
+	ErrAlreadyRegistered   = errors.New("Пользователь уже зарегистрирован")
+	ErrNotAuthenticated    = errors.New("Пользователь не авторизован")
+)
+
+var (
+	ErrNoRowsAffected = errors.New("no rows were affected")
 )

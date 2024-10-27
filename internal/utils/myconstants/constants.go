@@ -6,6 +6,7 @@ type AccessKey string
 const (
 	RequestID = "request_id"
 	XRealIP   = "X-Real-IP"
+	JwtToken  = "jwt-token"
 )
 
 // Настройка хэширования с помощью Argon2
@@ -17,7 +18,15 @@ const (
 	HashLetters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
 )
 
-var AllowedStatus = map[string]struct{}{
-	"approved": {},
-	"rejected": {},
+var AllowedActivities = map[string]float32{
+	"NFA": 1.2,
+	"LA":  1.375,
+	"MA":  1.55,
+	"HA":  1.725,
+	"EA":  1.9,
+}
+
+var AllowedHumanSex = map[string]struct{}{
+	"W": {},
+	"M": {},
 }

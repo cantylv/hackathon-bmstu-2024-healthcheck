@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	ent "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/entity"

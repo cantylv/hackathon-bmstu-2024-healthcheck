@@ -7,8 +7,8 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/cantylv/authorization-service/internal/delivery/route"
-	"github.com/cantylv/authorization-service/services/postgres"
+	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/delivery/route"
+	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/services/postgres"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"

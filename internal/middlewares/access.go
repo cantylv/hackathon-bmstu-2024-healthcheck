@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	f "github.com/cantylv/authorization-service/internal/utils/functions"
-	mc "github.com/cantylv/authorization-service/internal/utils/myconstants"
-	"github.com/cantylv/authorization-service/internal/utils/recorder"
+	f "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/functions"
+	mc "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myconstants"
+	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/recorder"
 	"github.com/satori/uuid"
 	"go.uber.org/zap"
 )

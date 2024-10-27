@@ -3,8 +3,8 @@ package functions
 import (
 	"net/http"
 
-	mc "github.com/cantylv/authorization-service/internal/utils/myconstants"
-	me "github.com/cantylv/authorization-service/internal/utils/myerrors"
+	mc "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myconstants"
+	me "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myerrors"
 )
 
 func GetCtxRequestID(r *http.Request) (string, error) {
