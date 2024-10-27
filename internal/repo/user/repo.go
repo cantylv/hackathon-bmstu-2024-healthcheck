@@ -7,6 +7,7 @@ import (
 	ent "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/entity"
 	repoErr "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myerrors"
 	"github.com/jackc/pgx/v5"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type Repo interface {
@@ -20,13 +21,14 @@ type Repo interface {
 var _ Repo = (*RepoLayer)(nil)
 
 type RepoLayer struct {
-	dbConn *pgx.Conn
+	dbConn    *pgx.Conn
+	nosqlConn *mongo.Client
 }
 
 // NewRepoLayer возвращает структуру уровня repository. Позволяет работать с пользователем (crd).
 func NewRepoLayer(dbConn *pgx.Conn) *RepoLayer {
 	return &RepoLayer{
-		dbConn: dbConn,
+		dbConn:    dbConn,
 	}
 }
 

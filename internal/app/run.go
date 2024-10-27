@@ -18,13 +18,21 @@ import (
 func Run(logger *zap.Logger) {
 	// init psql
 	postgresClient := postgres.Init(logger)
+	// mongoClient := mongodb.Init(logger)
 	defer func() {
 		err := postgresClient.Close(context.Background())
-		logger.Error(fmt.Sprintf("error while closing connection with psql: %v", err))
+		if err != nil {
+			logger.Error(fmt.Sprintf("error while closing connection with psql: %v", err))
+		}
+		// err = mongoClient.Disconnect(context.Background())
+		// if err != nil {
+		// 	logger.Error(fmt.Sprintf("error while closing connection with mongo: %v", err))
+		// }
 	}()
 	// define handlers
 	r := mux.NewRouter()
 	// run server
+	// handler := route.InitHTTPHandlers(r, postgresClient, mongoClient, logger)
 	handler := route.InitHTTPHandlers(r, postgresClient, logger)
 	srv := &http.Server{
 		Handler:      handler,
