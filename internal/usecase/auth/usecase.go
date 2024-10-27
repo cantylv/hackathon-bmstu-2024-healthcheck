@@ -9,6 +9,7 @@ import (
 	ent "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/entity"
 	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/entity/dto"
 	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/repo/user"
+	f "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/functions"
 	"github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myconstants"
 	me "github.com/cantylv/hackathon-bmstu-2024-healthcheck/internal/utils/myerrors"
 )
@@ -43,11 +44,10 @@ func (u *UsecaseLayer) SignUp(ctx context.Context, authData *dto.CreateData) (*e
 		return nil, me.ErrUserAlreadyExist
 	}
 	// получаем хэшированный пароль вместе с солью
-	// hashedPassword, err := f.GetHashedPassword(authData.Password)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	hashedPassword := authData.Password
+	hashedPassword, err := f.GetHashedPassword(authData.Password)
+	if err != nil {
+		return nil, err
+	}
 	dayCalories := getDayCalories(authData)
 	userNew, err := u.repoUser.Create(ctx, newUserFromSignUpForm(authData, hashedPassword, dayCalories))
 	if err != nil {
@@ -63,7 +63,7 @@ func getDayCalories(usr *dto.CreateData) float64 {
 	height := float64(usr.Height)
 	age := float64(usr.Age)
 
-	if usr.Sex == "W" {
+	if usr.Sex == "F" {
 		bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161
 	} else {
 		bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5
@@ -98,15 +98,7 @@ func (u *UsecaseLayer) SignIn(ctx context.Context, authData *dto.AuthData) (*ent
 		}
 		dbUser = uDB
 	}
-	// // получаем хэшированный пароль вместе с солью
-	// hashedPassword, err := f.GetHashedPassword(authData.Password)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// if !f.IsPasswordsEqual(hashedPassword, dbUser.Password) {
-	// 	return nil, me.ErrIncorrectPwdOrLogin
-	// }
-	if authData.Password != dbUser.Password {
+	if !f.IsPasswordsEqual(authData.Password, dbUser.Password) {
 		return nil, me.ErrIncorrectPwdOrLogin
 	}
 	return dbUser, nil

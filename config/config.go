@@ -6,15 +6,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/satori/uuid"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
-)
-
-var (
-	rootEmailDefault     = "root@mail.ru"
-	rootPasswordDefault  = "Root1234"
-	rootFirstNameDefault = "Root"
-	rootLastNameDefault  = "Rootov"
 )
 
 // readEnvAndSetDefault устанавливает переменные конфигурации viper по умолчанию. Используется для случая,
@@ -95,6 +89,8 @@ func readEnvAndSetDefault(logger *zap.Logger) {
 	} else {
 		viper.SetDefault("server.shutdown_duration", 10*time.Second)
 	}
+
+	viper.SetDefault("secret_key", uuid.NewV4().String())
 }
 
 // Read получает переменные из среды и файла конфигурации

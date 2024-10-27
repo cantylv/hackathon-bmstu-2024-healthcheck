@@ -27,6 +27,6 @@ var AllowedActivities = map[string]float32{
 }
 
 var AllowedHumanSex = map[string]struct{}{
-	"W": {},
+	"F": {},
 	"M": {},
 }

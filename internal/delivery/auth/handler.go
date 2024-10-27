@@ -3,7 +3,6 @@ package auth
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -33,14 +32,9 @@ func (h *AuthHandlerManager) SignUp(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.logger.Error(err.Error(), zap.String(mc.RequestID, requestID))
 	}
-	jwtToken, err := f.GetJWtToken(r)
-	if err != nil && !errors.Is(err, http.ErrNoCookie) {
-		h.logger.Error(fmt.Sprintf("error while getting jwt token: %v", err), zap.String(mc.RequestID, requestID))
-		f.Response(w, dto.ResponseError{Error: me.ErrInvalidData.Error()}, http.StatusInternalServerError)
-		return
-	}
-	if jwtToken != "" {
-		h.logger.Info("user is already registered", zap.String(mc.RequestID, requestID))
+	username := f.GetUsernameCtx(r)
+	if username != "" {
+		h.logger.Info(me.ErrAlreadyRegistered.Error(), zap.String(mc.RequestID, requestID))
 		f.Response(w, dto.ResponseError{Error: me.ErrAlreadyRegistered.Error()}, http.StatusUnauthorized)
 		return
 	}
@@ -93,16 +87,10 @@ func (h *AuthHandlerManager) SignIn(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.logger.Error(err.Error(), zap.String(mc.RequestID, requestID))
 	}
-
-	jwtToken, err := f.GetJWtToken(r)
-	if err != nil && !errors.Is(err, http.ErrNoCookie) {
-		h.logger.Error(fmt.Sprintf("error while getting jwt token: %v", err), zap.String(mc.RequestID, requestID))
-		f.Response(w, dto.ResponseError{Error: me.ErrInvalidData.Error()}, http.StatusInternalServerError)
-		return
-	}
-	if jwtToken != "" {
-		h.logger.Info("user is already registered", zap.String(mc.RequestID, requestID))
-		f.Response(w, dto.ResponseError{Error: me.ErrAlreadyRegistered.Error()}, http.StatusUnauthorized)
+	username := f.GetUsernameCtx(r)
+	if username != "" {
+		h.logger.Info(me.ErrAlreadyAuthenticated.Error(), zap.String(mc.RequestID, requestID))
+		f.Response(w, dto.ResponseError{Error: me.ErrAlreadyAuthenticated.Error()}, http.StatusUnauthorized)
 		return
 	}
 
@@ -152,18 +140,13 @@ func (h *AuthHandlerManager) SignOut(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.logger.Error(err.Error(), zap.String(mc.RequestID, requestID))
 	}
-	jwtToken, err := f.GetJWtToken(r)
-	if err != nil && !errors.Is(err, http.ErrNoCookie) {
-		h.logger.Error(fmt.Sprintf("error while getting jwt token: %v", err), zap.String(mc.RequestID, requestID))
-		f.Response(w, dto.ResponseError{Error: me.ErrInternal.Error()}, http.StatusInternalServerError)
-		return
-	}
-	if jwtToken == "" {
-		h.logger.Info("user is not authenticated", zap.String(mc.RequestID, requestID))
+	username := f.GetUsernameCtx(r)
+	if username == "" {
+		h.logger.Info(me.ErrNotAuthenticated.Error(), zap.String(mc.RequestID, requestID))
 		f.Response(w, dto.ResponseError{Error: me.ErrNotAuthenticated.Error()}, http.StatusUnauthorized)
 		return
 	}
 
 	f.FlashCookie(w, r)
-	f.Response(w, dto.ResponseDetail{Detail: "ok"}, http.StatusOK)
+	f.Response(w, dto.ResponseDetail{Detail: "Вы успешно завершили сессию"}, http.StatusOK)
 }

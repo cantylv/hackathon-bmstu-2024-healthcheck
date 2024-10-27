@@ -26,12 +26,20 @@ func GetJWtToken(r *http.Request) (string, error) {
 	return jwtCookie.Value, nil
 }
 
+func GetUsernameCtx(r *http.Request) string {
+	username, ok := r.Context().Value("username").(string)
+	if ok {
+		return username
+	}
+	return ""
+}
+
 // NewCsrfToken
 // Generates jwt-token.
-func NewJwtToken(props NewJwtTokenProps) (string, error) {
+func NewJwtToken(props NewJwtTokenProps, dateExp time.Time) (string, error) {
 	// Encode header.
 	h := dto.JwtTokenHeader{
-		Exp: time.Now().Format("02.01.2006 15:04:05 UTC-07"),
+		Exp: dateExp.Format("02.01.2006 15:04:05 UTC-07"),
 	}
 	rawDataHeader, err := json.Marshal(h)
 	if err != nil {
